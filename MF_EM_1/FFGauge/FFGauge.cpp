@@ -39,8 +39,6 @@ void FFGauge::attach(uint16_t Pin3, char *init)
     tft.fillScreen(TFT_BLACK);
     tft.startWrite(); // TFT chip select held low permanently
 
-    
-
     mainGaugeSpr.createSprite(FF_GAUGE_WIDTH, FF_GAUGE_HEIGHT);
     mainGaugeSpr.setPivot(120, 120);
     mainGaugeSpr.loadFont(DotMatrix_Regular_30);
