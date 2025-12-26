@@ -131,7 +131,8 @@ void FFGauge::drawGauge()
     // Draw the needle
     needleSpr.pushRotated(&mainGaugeSpr, needleRotationAngle, BACKGROUND_COLOR);
 
-
+    // Finally, draw the whole gauge
+    mainGaugeSpr.pushSprite(0, 0);
 
 }
 
