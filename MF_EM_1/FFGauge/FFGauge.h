@@ -18,7 +18,7 @@ private:
     
 // Function declarations
     float scaleValue(float x, float in_min, float in_max, float out_min, float out_max);
-    void  setInstrumentBrightnessRatio(float ratio);
+    void  setInstrumentBrightness(float value);
     void  setFuelFlow(float value);
     void  setPowerSave(bool enabled);
     void  drawGauge();
@@ -27,11 +27,8 @@ private:
     float    fuelFlow = 0; 
     float    needleRotationAngle       = 0; // angle of rotation of needle based on Fuel Flow from sim  
     float    instrumentBrightness      = 255;
-    float    instrumentBrightnessRatio = 0;
     bool     powerSaveFlag             = false;
-    int      prevScreenRotation        = 3;
     bool     showLogo                  = true;
-    uint16_t backlight_pin = 9;
 
     int oneValue = 0;
     int tenValue = 0;

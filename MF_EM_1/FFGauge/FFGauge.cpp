@@ -6,12 +6,16 @@
 #include "../Common/DotMatrix_Regular-30.h"
 #include "../Common/Needle.h"
 #include "../Common/Red_led.h"
+#include "RunningAverage.h"
 
 #define BACKGROUND_COLOR  0x1041
 
 static TFT_eSPI    tft;
 static TFT_eSprite mainGaugeSpr = TFT_eSprite(&tft);
 static TFT_eSprite needleSpr = TFT_eSprite(&tft);;
+
+int FFMessageID = -100;
+RunningAverage RA_FFNeedleRotationAngle(5);   // for Running Average of the needle rotation
 
 /* **********************************************************************************
     This is just the basic code to set up your custom device.
@@ -48,6 +52,10 @@ void FFGauge::attach(uint16_t Pin3, char *init)
     needleSpr.createSprite(NEEDLE_WIDTH, NEEDLE_HEIGHT);
     needleSpr.setPivot(NEEDLE_WIDTH / 2, 80);
     needleSpr.pushImage(0, 0, NEEDLE_WIDTH, NEEDLE_HEIGHT, Needle);
+    
+    RA_FFNeedleRotationAngle.clear();  // clear running average
+
+    analogWrite(TFT_BL, instrumentBrightness);
 
 }
 
@@ -75,35 +83,45 @@ void FFGauge::set(int16_t messageID, char *setPoint)
         Put in your code to enter this mode (e.g. clear a display)
 
     ********************************************************************************** */
+    FFMessageID = messageID;
 
     // do something according your messageID
     switch (messageID) {
     case -1:
-        setPowerSave(true);
+        // setPowerSave(true);
+        break;
     case -2:
         setPowerSave((bool)atoi(setPoint));
         break;
     case 0:
         setFuelFlow(atof(setPoint));
         break;
-    case 1:
-        setInstrumentBrightnessRatio(atof(setPoint));
+    case 100:
+        setInstrumentBrightness(atof(setPoint));
         break;
-    // case 100:
-    //     setScreenRotation(atoi(setPoint));
-    // break;
     default:
         break;
     }
-
-    // draw the Fuel Flow Gauge
-    drawGauge();
 }
 
 void FFGauge::update()
 {
     // Do something which is required regulary
+
+    if (FFMessageID == -1 || powerSaveFlag == true)  // Mobiflight Connector has stopped or entered power save mode
+    {
+        tft.fillScreen(TFT_BLACK);
+        analogWrite(TFT_BL, 0);
+    }
+    else
+    {
+        float pwmOutput = 0;
+        pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+        analogWrite(TFT_BL, pwmOutput);
+        drawGauge();
+    }
 }
+
 
 void FFGauge::drawGauge()
 {
@@ -114,6 +132,8 @@ void FFGauge::drawGauge()
     thousandValue = (int)(fuelFlow / 1000) % 10;
 
     needleRotationAngle = scaleValue(fuelFlow, 0, 700, -110, 110);
+    RA_FFNeedleRotationAngle.addValue(needleRotationAngle);
+
     mainGaugeSpr.fillSprite(TFT_BLACK);
     mainGaugeSpr.pushImage(0, 0, 240, 240, FF_Gauge);
 
@@ -127,7 +147,7 @@ void FFGauge::drawGauge()
         mainGaugeSpr.drawString(String(thousandValue), 97, 170);
 
     // Draw the needle
-    needleSpr.pushRotated(&mainGaugeSpr, needleRotationAngle, BACKGROUND_COLOR);
+    needleSpr.pushRotated(&mainGaugeSpr, RA_FFNeedleRotationAngle.getAverage(), BACKGROUND_COLOR);
 
     // Finally, draw the whole gauge
     mainGaugeSpr.pushSprite(0, 0);
@@ -139,20 +159,20 @@ void FFGauge::setFuelFlow(float value)
     fuelFlow = value;
 }
 
-void FFGauge::setInstrumentBrightnessRatio(float ratio)
+void FFGauge::setInstrumentBrightness(float value)
 {
-    instrumentBrightnessRatio = ratio;
-    instrumentBrightness      = round(scaleValue(instrumentBrightnessRatio, 0, 1, 0, 255));
-    analogWrite(backlight_pin, instrumentBrightness);
+    float pwmOutput = 0;
+
+    instrumentBrightness = scaleValue(value, 0, 1, 0, 255);
+    pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+    analogWrite(TFT_BL, pwmOutput);
 }
 
 void FFGauge::setPowerSave(bool enabled)
 {
     if (enabled) {
-        analogWrite(backlight_pin, 0);
         powerSaveFlag = true;
     } else {
-        analogWrite(backlight_pin, instrumentBrightness);
         powerSaveFlag = false;
     }
 }

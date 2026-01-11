@@ -17,8 +17,7 @@ private:
     uint8_t _pin1, _pin2, _pin3;
      // Variables
     float    ITT                  = 0;  // ITT Value from sim
-    float    instrumentBrightness      = 255;  // Instrument Brightness Ratio from sim
-    float    instrumentBrightnessRatio = 0;
+    float    instrumentBrightness      = 255;  // Instrument Brightness
     float    needleRotationAngle         = 0; // angle of rotation of needle based on the ITT
 
     float minGreenAngle = 0;
@@ -41,14 +40,19 @@ private:
     int thousandValue = 0;
 
     bool     powerSaveFlag             = false;
-    uint8_t  backlight_pin             = 9;
 
     // bool     showLogo                  = true;
 
     // Function declarations
     float scaleValue(float x, float in_min, float in_max, float out_min, float out_max);
-    void  setInstrumentBrightnessRatio(float ratio);
+    void  setInstrumentBrightness(float value);
     void  setITT(float value);
+    void  setITTGreenArcStart(float value);
+    void  setITTGreenArcEnd(float value);
+    void  setITTYellowArcStart(float value);
+    void  setITTYellowArcEnd(float value);
+    void  setITTRedlineTOGA(float value);
+    void  setITTRedlineMax(float value);
     void  setPowerSave(bool enabled);
     void  drawGauge();
 };

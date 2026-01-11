@@ -8,6 +8,7 @@
 #include "../Common/Needle.h"
 #include "../Common/Red_led.h"
 #include "../Common/Red_marker.h"
+#include "RunningAverage.h"
 
 #define BACKGROUND_COLOR  0x1041
 
@@ -17,6 +18,9 @@ static TFT_eSprite needleSpr = TFT_eSprite(&tft);
 static TFT_eSprite redLEDSpr = TFT_eSprite(&tft);
 static TFT_eSprite redMarkerSpr = TFT_eSprite(&tft);
 static TFT_eSprite dottedLineSpr = TFT_eSprite(&tft);
+
+RunningAverage RA_ITTNeedleRotationAngle(5);   // for Running Average of the needle rotation
+int ITTMessageID = -100;
 
 /* **********************************************************************************
     This is just the basic code to set up your custom device.
@@ -67,6 +71,10 @@ void ITTGauge::attach(uint16_t Pin3, char *init)
     dottedLineSpr.setPivot(ITT_DOTTED_LINE_WIDTH / 2, 105);
     dottedLineSpr.pushImage(0, 0, ITT_DOTTED_LINE_WIDTH, ITT_DOTTED_LINE_HEIGHT, ITT_Dotted_Line);
 
+    RA_ITTNeedleRotationAngle.clear();    // clear running average
+
+    analogWrite(TFT_BL, instrumentBrightness);
+
 }
 
 void ITTGauge::detach()
@@ -95,11 +103,12 @@ void ITTGauge::set(int16_t messageID, char *setPoint)
         Put in your code to enter this mode (e.g. clear a display)
 
     ********************************************************************************** */
-
+    ITTMessageID = messageID;
     // do something according your messageID
     switch (messageID) {
     case -1:
-        setPowerSave(true);
+        // setPowerSave(true);
+        break;
     case -2:
         setPowerSave((bool)atoi(setPoint));
         break;
@@ -107,23 +116,50 @@ void ITTGauge::set(int16_t messageID, char *setPoint)
         setITT(atof(setPoint));
         break;
     case 1:
-        setInstrumentBrightnessRatio(atof(setPoint));
+        setITTGreenArcStart(atof(setPoint));
         break;
-    // case 100:
-    //     setScreenRotation(atoi(setPoint));
-    // break;
+    case 2:
+        setITTGreenArcEnd(atof(setPoint));
+        break;
+    case 3:
+        setITTYellowArcStart(atof(setPoint));
+        break;
+    case 4:
+        setITTYellowArcEnd(atof(setPoint));
+        break;
+    case 5:
+        setITTRedlineTOGA(atof(setPoint));
+        break;
+    case 6:
+        setITTRedlineMax(atof(setPoint));
+        break;
+    case 100:
+        setInstrumentBrightness(atof(setPoint));
+        break;
     default:
         break;
     }
 
     // draw the Fuel Flow Gauge
-    drawGauge();
+
 }
 
 void ITTGauge::update()
 {
     // Do something which is required regulary
-}
+    if (ITTMessageID == -1 || powerSaveFlag == true)  // Mobiflight Connector has stopped or entered power save mode
+    {
+        tft.fillScreen(TFT_BLACK);
+        analogWrite(TFT_BL, 0);
+    }
+    else
+    {
+        float pwmOutput = 0;
+        pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+        analogWrite(TFT_BL, pwmOutput);
+        drawGauge();
+    }
+}   
 
 void ITTGauge::drawGauge()
 {
@@ -139,13 +175,13 @@ void ITTGauge::drawGauge()
     maxYellowAngle = scaleValue(maxYellowITT, 200, 1200, -110, 110);
     redLineAngle = scaleValue(redlineITT, 200, 1200, -110, 110);
     startLimitsAngle = scaleValue(startLimitsITT, 200, 1200, -110, 110);
-    needleRotationAngle = scaleValue(ITT, 200, 1200, -110, 110);
 
-    
+    needleRotationAngle = scaleValue(ITT, 200, 1200, -110, 110);
+    RA_ITTNeedleRotationAngle.addValue(needleRotationAngle);
+
     mainGaugeSpr.fillSprite(TFT_BLACK);
     
     mainGaugeSpr.pushImage(0, 0, 240, 240, ITT_Gauge);
-    // mainGaugeSpr.drawString(String((int)ITT), 168, 170);
 
     // Draw Green Arc
     mainGaugeSpr.drawSmoothArc(120, 120, 205 / 2, 195 / 2, minGreenAngle + 180, maxGreenAngle + 180, TFT_GREEN, TFT_BLACK);
@@ -169,7 +205,7 @@ void ITTGauge::drawGauge()
         mainGaugeSpr.drawString(String(thousandValue), 97, 170);
 
     // Draw the needle
-    needleSpr.pushRotated(&mainGaugeSpr, needleRotationAngle, BACKGROUND_COLOR);
+    needleSpr.pushRotated(&mainGaugeSpr, RA_ITTNeedleRotationAngle.getAverage(), BACKGROUND_COLOR);
 
     // Draw Red Led if red line is crossed
     if (ITT >= redlineITT )
@@ -179,31 +215,62 @@ void ITTGauge::drawGauge()
 
 }
 
+// Setters
 void ITTGauge::setITT (float value)
 {
     ITT = value;
-    drawGauge();
 }
 
-void ITTGauge::setInstrumentBrightnessRatio(float ratio)
+void ITTGauge::setITTGreenArcStart(float value)
 {
-    instrumentBrightnessRatio = ratio;
-    instrumentBrightness      = round(scaleValue(instrumentBrightnessRatio, 0, 1, 0, 255));
+    minGreenITT = value;
+}
 
-    analogWrite(backlight_pin, instrumentBrightness);
+void ITTGauge::setITTGreenArcEnd(float value)
+{
+    maxGreenITT = value;
+}
+
+void ITTGauge::setITTYellowArcStart(float value)
+{
+    minYellowITT = value;
+}
+
+void ITTGauge::setITTYellowArcEnd(float value)
+{
+    maxYellowITT = value;
+}
+
+void ITTGauge::setITTRedlineTOGA(float value)
+{
+    redlineITT = value;
+}
+
+void ITTGauge::setITTRedlineMax(float value)
+{
+    startLimitsITT = value;
+}
+
+void ITTGauge::setInstrumentBrightness(float value)
+{
+    float pwmOutput = 0;
+
+    instrumentBrightness = scaleValue(value, 0, 1, 0, 255);
+    pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+    analogWrite(TFT_BL, pwmOutput);
 }
 
 void ITTGauge::setPowerSave(bool enabled)
 {
     if (enabled) {
-        analogWrite(backlight_pin, 0);
         powerSaveFlag = true;
     } else {
-        analogWrite(backlight_pin, instrumentBrightness);
         powerSaveFlag = false;
     }
 }
 
+
+// Scale function
 float ITTGauge::scaleValue(float x, float in_min, float in_max, float out_min, float out_max)
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;

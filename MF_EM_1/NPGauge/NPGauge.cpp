@@ -7,6 +7,7 @@
 #include "../Common/Needle.h"
 #include "../Common/Red_led.h"
 #include "../Common/Red_marker.h"
+#include "RunningAverage.h"
 
 #define BACKGROUND_COLOR  0x1041
 
@@ -15,6 +16,9 @@ static TFT_eSprite mainGaugeSpr = TFT_eSprite(&tft);
 static TFT_eSprite needleSpr = TFT_eSprite(&tft);
 static TFT_eSprite redLEDSpr = TFT_eSprite(&tft);
 static TFT_eSprite redMarkerSpr = TFT_eSprite(&tft);
+
+RunningAverage RA_RPMNeedleRotationAngle(5);   // for Running Average of the needle rotation
+int NPMessageID = -100;
 
 /* **********************************************************************************
     This is just the basic code to set up your custom device.
@@ -41,9 +45,7 @@ void NPGauge::attach(uint16_t Pin3, char *init)
     tft.setPivot(120, 120);
     tft.fillScreen(TFT_BLACK);
     tft.startWrite(); // TFT chip select held low permanently
-
     
-
     mainGaugeSpr.createSprite(NP_GAUGE_WIDTH, NP_GAUGE_HEIGHT);
     mainGaugeSpr.setPivot(120, 120);
     mainGaugeSpr.loadFont(DotMatrix_Regular_30);
@@ -60,6 +62,10 @@ void NPGauge::attach(uint16_t Pin3, char *init)
     redMarkerSpr.createSprite(RED_MARKER_WIDTH, RED_MARKER_HEIGHT);
     redMarkerSpr.setPivot(RED_MARKER_WIDTH / 2, 110);
     redMarkerSpr.pushImage(0, 0, RED_MARKER_WIDTH, RED_LED_HEIGHT, Red_marker);
+
+    RA_RPMNeedleRotationAngle.clear();    // clear running average
+
+    analogWrite(TFT_BL, instrumentBrightness);
 
 }
 
@@ -89,11 +95,12 @@ void NPGauge::set(int16_t messageID, char *setPoint)
         Put in your code to enter this mode (e.g. clear a display)
 
     ********************************************************************************** */
-
+    NPMessageID = messageID;
     // do something according your messageID
     switch (messageID) {
     case -1:
-        setPowerSave(true);
+        // setPowerSave(true);
+        break;
     case -2:
         setPowerSave((bool)atoi(setPoint));
         break;
@@ -101,22 +108,40 @@ void NPGauge::set(int16_t messageID, char *setPoint)
         setRPM(atof(setPoint));
         break;
     case 1:
-        setInstrumentBrightnessRatio(atof(setPoint));
+        setRPMGreenArcStart(atof(setPoint));
         break;
-    // case 100:
-    //     setScreenRotation(atoi(setPoint));
-    // break;
+    case 2:
+        setRPMGreenArcEnd(atof(setPoint));
+        break;
+    case 3:
+        setRPMRedline(atof(setPoint));
+        break;
+    case 100:
+        setInstrumentBrightness(atof(setPoint));
+        break;
     default:
         break;
     }
 
-    // draw the Fuel Flow Gauge
-    drawGauge();
+
 }
 
 void NPGauge::update()
 {
     // Do something which is required regulary
+
+    if (NPMessageID == -1 || powerSaveFlag == true)  // Mobiflight Connector has stopped or entered power save mode
+    {
+        tft.fillScreen(TFT_BLACK);
+        analogWrite(TFT_BL, 0);
+    }
+    else
+    {
+        float pwmOutput = 0;
+        pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+        analogWrite(TFT_BL, pwmOutput);
+        drawGauge();
+    }
 }
 
 void NPGauge::drawGauge()
@@ -131,7 +156,9 @@ void NPGauge::drawGauge()
     maxGreenAngle = scaleValue(maxGreenRPM, 0, 2400, -110, 110);
     redlineRPMAngle = scaleValue(redlineRPM, 0, 2400, -110, 110);
     needleRotationAngle = scaleValue(RPM, 0, 2400, -110, 110);
-    
+
+    RA_RPMNeedleRotationAngle.addValue(needleRotationAngle);
+
     mainGaugeSpr.fillSprite(TFT_BLACK);
     mainGaugeSpr.pushImage(0, 0, NP_GAUGE_WIDTH, NP_GAUGE_HEIGHT, NP_Gauge);
     mainGaugeSpr.drawSmoothArc(120, 120, 205 / 2, 195 / 2, minGreenAngle + 180, maxGreenAngle + 180, TFT_GREEN, TFT_BLACK);
@@ -151,35 +178,10 @@ void NPGauge::drawGauge()
     // Draw the red line marker
     redMarkerSpr.pushRotated(&mainGaugeSpr, redlineRPMAngle, BACKGROUND_COLOR);
 
-    // Draw the needle
-    needleSpr.pushRotated(&mainGaugeSpr, needleRotationAngle, BACKGROUND_COLOR);
-
-    // Final draw everything
+    needleSpr.pushRotated(&mainGaugeSpr, RA_RPMNeedleRotationAngle.getAverage(), BACKGROUND_COLOR);
+        // Final draw everything
     mainGaugeSpr.pushSprite(0, 0);
 
-}
-
-void NPGauge::setRPM(float value)
-{
-    RPM = value;
-}
-
-void NPGauge::setInstrumentBrightnessRatio(float ratio)
-{
-    instrumentBrightnessRatio = ratio;
-    instrumentBrightness      = round(scaleValue(instrumentBrightnessRatio, 0, 1, 0, 255));
-    analogWrite(backlight_pin, instrumentBrightness);
-}
-
-void NPGauge::setPowerSave(bool enabled)
-{
-    if (enabled) {
-        analogWrite(backlight_pin, 0);
-        powerSaveFlag = true;
-    } else {
-        analogWrite(backlight_pin, instrumentBrightness);
-        powerSaveFlag = false;
-    }
 }
 
 
@@ -187,3 +189,45 @@ float NPGauge::scaleValue(float x, float in_min, float in_max, float out_min, fl
 {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+// Setters
+void NPGauge::setRPM(float value)
+{
+    RPM = value;
+}
+
+void NPGauge::setInstrumentBrightness(float value)
+{
+    float pwmOutput = 0;
+
+    instrumentBrightness = scaleValue(value, 0, 1, 0, 255);
+    pwmOutput = sq(instrumentBrightness) / 255.0;  // needed to correct PWM output due to human eye brightness perception
+    analogWrite(TFT_BL, pwmOutput);
+}
+
+void NPGauge::setPowerSave(bool enabled)
+{
+    if (enabled) {
+        powerSaveFlag = true;
+    } else {
+        powerSaveFlag = false;
+    }
+}
+
+void NPGauge::setRPMGreenArcStart(float value)
+{
+    minGreenRPM = value;
+}
+
+void NPGauge::setRPMGreenArcEnd(float value)
+{
+    maxGreenRPM = value;
+}
+
+void NPGauge::setRPMRedline(float value)
+{
+    maxGreenRPM = value;
+}
+
+
+

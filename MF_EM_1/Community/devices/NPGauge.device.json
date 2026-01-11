@@ -1,7 +1,7 @@
 {
     "$schema": "./mfdevice.schema.json",
     "Info": {
-      "Label": "NP Gauge",
+      "Label": "Prop RPM Gauge",
       "Type": "NPGauge",
       "Author": "Saves",
       "URL": "https://github.com",
@@ -18,6 +18,26 @@
         "id": 0,
         "label": "Properller RPM (NP) Value",
         "description": "$ will be displayed as Propeller RPM (NP) value"
+      },     
+      {
+        "id": 1,
+        "label": "RPM Green arc start (default 1600 RPM)",
+        "description": "$ will be displayed Green RPM arc start"
+      },    
+      {
+        "id": 2,
+        "label": "RPM Green arc end (default 1900 RPM)",
+        "description": "$ will be displayed as Green RPM band end"
+      }, 
+      {
+        "id": 3,
+        "label": "RPM Redline (default 1900 RPM)",
+        "description": "$ will be displayed as RPM Redline"
+      },
+      {
+        "id": 100,
+        "label": "Instrument Brightness Ratio (0 to 1)",
+        "description": "$ will be displayed as Instrument Brightness Ratio"
       }
     ]
   }

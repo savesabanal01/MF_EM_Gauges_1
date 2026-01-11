@@ -18,15 +18,17 @@ private:
     
 // Function declarations
     float scaleValue(float x, float in_min, float in_max, float out_min, float out_max);
-    void  setInstrumentBrightnessRatio(float ratio);
+    void  setInstrumentBrightness(float value);
     void  setRPM(float value);
     void  setPowerSave(bool enabled);
+    void  setRPMGreenArcStart(float value);
+    void  setRPMGreenArcEnd(float value);
+    void  setRPMRedline(float value);
     void  drawGauge();
 
     // Variables
     float    RPM                  = 0;  // RPM Value from sim
     float    instrumentBrightness      = 255;  // Instrument Brightness Ratio from sim
-    float    instrumentBrightnessRatio = 0;
     float    needleRotationAngle         = 0; // angle of rotation of needle based on the RPM
 
     float minGreenAngle = 0;
@@ -37,8 +39,7 @@ private:
     float maxGreenRPM = 1900;
     float redlineRPM = 1900;
 
-    uint8_t  backlight_pin             = 9;
-    bool     powerSaveFlag             = false;
+    bool  powerSaveFlag = false;
 
     int oneValue = 0;
     int tenValue = 0;

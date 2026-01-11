@@ -1,10 +1,10 @@
 {
     "$schema": "./mfdevice.schema.json",
     "Info": {
-      "Label": "NP Gauge",
-      "Type": "NPGauge",
+      "Label": "Interstage Turbine Temperature Gauge",
+      "Type": "ITTGauge",
       "Author": "Saves",
-      "URL": "https://github.com",
+      "URL": "hhttps://github.com/savesabanal01/MF_EM_Gauges_1",
       "Version" : "1.0.0"
     },
     "Config": {
@@ -18,6 +18,41 @@
         "id": 0,
         "label": "Interstage Turbine Temperature (ITT) Value",
         "description": "$ will be displayed as ITT value"
+      },
+      {
+        "id": 1,
+        "label": "Green arc start (default 200°C)",
+        "description": "$ will be displayed as Green arc start"
+      },
+      {
+        "id": 2,
+        "label": "Green arc end (default 830°C)",
+        "description": "$ will be displayed as Green arc end"
+      },
+      {
+        "id": 3,
+        "label": "Yellow arc start (default 830°C)",
+        "description": "$ will be displayed as Yellow arc start"
+      },
+      {
+        "id": 4,
+        "label": "Yellow arc end (default 850°C)",
+        "description": "$ will be displayed as Yellow arc end"
+      },
+      {
+        "id": 5,
+        "label": "Redline TOGA (default 850°C)",
+        "description": "$ will be displayed as Redline Takeoff/Go Around"
+      },
+      {
+        "id": 6,
+        "label": "Redline Max (default 1090°C)",
+        "description": "$ will be displayed as Redline maximum"
+      },
+      {
+        "id": 100,
+        "label": "Instrument Brightness Ratio (0 to 1)",
+        "description": "$ will be displayed as Instrument Brightness Ratio"
       }
     ]
   }

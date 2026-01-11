@@ -1,23 +1,28 @@
 {
     "$schema": "./mfdevice.schema.json",
     "Info": {
-      "Label": "Fuel Flow Gauge",
+      "Label": "Fuel Flow Gauge (lbs/hr)",
       "Type": "FFGauge",
-      "Author": "Saves",
-      "URL": "https://github.com",
+      "Author": "Save Sabanal",
+      "URL": "https://github.com/savesabanal01/MF_EM_Gauges_1",
       "Version" : "1.0.0"
     },
     "Config": {
       "Pins": [
-        "Backlight"
+        "Dummy_PIN"
       ],
       "isI2C": false
     },
     "MessageTypes": [
       {
         "id": 0,
-        "label": "Show Fuel Flow Value",
-        "description": "$ will be displayed as Speed value"
+        "label": "Show Fuel Flow Value (Pounds / Hour)",
+        "description": "$ will be displayed as Fuel Flow value"
+      },
+      {
+        "id": 100,
+        "label": "Instrument Brightness Ratio (0 to 1)",
+        "description": "$ will be displayed as Instrument Brightness Ratio"
       }
     ]
   }
