@@ -1,0 +1,254 @@
+{
+  "Name": "MF_EM_NP_FF_ITT",
+  "ConfigFiles": [
+    {
+      "Label": "MF_EM_NP_FF_ITT",
+      "FileName": "C:\\Users\\saves\\OneDrive\\Desktop\\Mobiflight Configs\\MF_EM_Gauges\\MF_EM_NP_FF_ITT.mcc",
+      "ReferenceOnly": false,
+      "EmbedContent": true,
+      "ConfigItems": [
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/engine/indicators/prop_speed_rpm[0]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Prop RPM Gauge",
+            "CustomType": null,
+            "CustomName": "Prop RPM Gauge",
+            "MessageType": 0,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Prop RPM Gauge",
+          "GUID": "1fcb967a-44d8-4602-8dcd-14feb64e02f3",
+          "Active": true,
+          "Name": "Left Prop RPM",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_NP1/ SN-B27-A38"
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/switches/instrument_brightness_ratio[4]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Prop RPM Gauge",
+            "CustomType": null,
+            "CustomName": "Prop RPM Gauge",
+            "MessageType": 100,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Prop RPM Gauge",
+          "GUID": "698c82ac-5264-4b31-a57e-761330e9e17f",
+          "Active": true,
+          "Name": "Left NP Gauge Brightness",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_NP1/ SN-B27-A38"
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/engine/indicators/fuel_flow_kg_sec[0]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Fuel Flow Gauge (lbs/hr)",
+            "CustomType": null,
+            "CustomName": "Fuel Flow Gauge (lbs/hr)",
+            "MessageType": 0,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Fuel Flow Gauge (lbs/hr)",
+          "GUID": "d35e3659-cea4-4531-87b2-f956b4a59bf6",
+          "Active": true,
+          "Name": "Fuel Flow (poiund/hr)",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_FF/ SN-8B9-4FC",
+          "Modifiers": {
+            "Items": [
+              {
+                "Type": "Transformation",
+                "Expression": "$ * 7936.64",
+                "Active": true
+              }
+            ]
+          }
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/switches/instrument_brightness_ratio[4]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Fuel Flow Gauge (lbs/hr)",
+            "CustomType": null,
+            "CustomName": "Fuel Flow Gauge (lbs/hr)",
+            "MessageType": 100,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Fuel Flow Gauge (lbs/hr)",
+          "GUID": "c5962985-7dec-47b9-9503-b82fe6990859",
+          "Active": true,
+          "Name": "FF Gauge Brightness",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_FF/ SN-8B9-4FC"
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/engine/indicators/prop_speed_rpm[1]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Prop RPM Gauge",
+            "CustomType": null,
+            "CustomName": "Prop RPM Gauge",
+            "MessageType": 0,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Prop RPM Gauge",
+          "GUID": "1c6ed605-0f05-440c-884f-0ab4acdda55c",
+          "Active": true,
+          "Name": "Right Prop RPM",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_NP2/ SN-870-C5C",
+          "Preconditions": []
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/switches/instrument_brightness_ratio[4]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Prop RPM Gauge",
+            "CustomType": null,
+            "CustomName": "Prop RPM Gauge",
+            "MessageType": 100,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Prop RPM Gauge",
+          "GUID": "0f2676fc-2a27-469a-a016-711dad575473",
+          "Active": true,
+          "Name": "Right NP Gauge Brightness",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_NP2/ SN-870-C5C"
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/engine/indicators/ITT_deg_C[0]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Interstage Turbine Temperature Gauge",
+            "CustomType": null,
+            "CustomName": "Interstage Turbine Temperature Gauge",
+            "MessageType": 0,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Interstage Turbine Temperature Gauge",
+          "GUID": "fe2bffaa-d379-4887-b8a0-7ead3180e519",
+          "Active": true,
+          "Name": "ITT Gauge",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_ITT/ SN-F60-01F"
+        },
+        {
+          "Source": {
+            "XplaneDataRef": {
+              "Path": "sim/cockpit2/switches/instrument_brightness_ratio[4]"
+            },
+            "Type": "XplaneSource"
+          },
+          "TestValue": {
+            "type": 1,
+            "Float64": 1.0,
+            "String": null
+          },
+          "Device": {
+            "Name": "Interstage Turbine Temperature Gauge",
+            "CustomType": null,
+            "CustomName": "Interstage Turbine Temperature Gauge",
+            "MessageType": 100,
+            "Value": "$",
+            "Type": "CustomDevice"
+          },
+          "DeviceType": "CustomDevice",
+          "DeviceName": "Interstage Turbine Temperature Gauge",
+          "GUID": "be923255-daa4-490a-9c15-35a53cd7139f",
+          "Active": true,
+          "Name": "ITT Gauge Brightness",
+          "Type": "OutputConfigItem",
+          "ModuleSerial": "MF_EM_1_ITT/ SN-F60-01F"
+        }
+      ]
+    }
+  ],
+  "Sim": "xplane",
+  "Aircraft": [],
+  "Features": {
+    "FSUIPC": false,
+    "ProSim": false
+  },
+  "_version": "0.9"
+}
