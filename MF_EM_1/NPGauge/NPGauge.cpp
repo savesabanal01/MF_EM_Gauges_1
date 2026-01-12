@@ -49,8 +49,8 @@ void NPGauge::attach(uint16_t Pin3, char *init)
     mainGaugeSpr.createSprite(NP_GAUGE_WIDTH, NP_GAUGE_HEIGHT);
     mainGaugeSpr.setPivot(120, 120);
     mainGaugeSpr.loadFont(DotMatrix_Regular_30);
-    mainGaugeSpr.setTextColor(TFT_GREEN);
-    mainGaugeSpr.setTextDatum(TR_DATUM);
+    mainGaugeSpr.setTextColor(TFT_GREEN, TFT_BLACK);
+    mainGaugeSpr.setTextDatum(TC_DATUM);
 
     needleSpr.createSprite(NEEDLE_WIDTH, NEEDLE_HEIGHT);
     needleSpr.setPivot(NEEDLE_WIDTH / 2, 80);
@@ -163,14 +163,14 @@ void NPGauge::drawGauge()
     mainGaugeSpr.pushImage(0, 0, NP_GAUGE_WIDTH, NP_GAUGE_HEIGHT, NP_Gauge);
     mainGaugeSpr.drawSmoothArc(120, 120, 205 / 2, 195 / 2, minGreenAngle + 180, maxGreenAngle + 180, TFT_GREEN, TFT_BLACK);
 
-    // Draw the numbers in the digital display
-    mainGaugeSpr.drawString(String(oneValue), 162, 170);
+    // Draw the numbers in the digital display, also adjust position if value is "1"
+    mainGaugeSpr.drawString(String(oneValue), 160, 170);
     if (RPM >= 10)
-        mainGaugeSpr.drawString(String(tenValue), 140, 170);
+        mainGaugeSpr.drawString(String(tenValue), 138, 170);
     if (RPM >= 100)
-        mainGaugeSpr.drawString(String(hundredValue), 119, 170);
+        mainGaugeSpr.drawString(String(hundredValue), 116, 170);
     if (RPM >= 1000)
-        mainGaugeSpr.drawString(String(thousandValue), 97, 170);
+        mainGaugeSpr.drawString(String(thousandValue), 94, 170);
 
     if (RPM >= redlineRPM )
         redLEDSpr.pushToSprite(&mainGaugeSpr, 38, 159, BACKGROUND_COLOR);

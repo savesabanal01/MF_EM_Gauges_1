@@ -47,7 +47,7 @@ void FFGauge::attach(uint16_t Pin3, char *init)
     mainGaugeSpr.setPivot(120, 120);
     mainGaugeSpr.loadFont(DotMatrix_Regular_30);
     mainGaugeSpr.setTextColor(TFT_GREEN);
-    mainGaugeSpr.setTextDatum(TR_DATUM);
+    mainGaugeSpr.setTextDatum(TC_DATUM);
 
     needleSpr.createSprite(NEEDLE_WIDTH, NEEDLE_HEIGHT);
     needleSpr.setPivot(NEEDLE_WIDTH / 2, 80);
@@ -138,13 +138,13 @@ void FFGauge::drawGauge()
     mainGaugeSpr.pushImage(0, 0, 240, 240, FF_Gauge);
 
     // Draw the numbers in the digital display
-    mainGaugeSpr.drawString(String(oneValue), 162, 170);
+    mainGaugeSpr.drawString(String(oneValue), 160, 170);
     if (fuelFlow >= 10)
-        mainGaugeSpr.drawString(String(tenValue), 140, 170);
+        mainGaugeSpr.drawString(String(tenValue), 138, 170);
     if (fuelFlow >= 100)
-        mainGaugeSpr.drawString(String(hundredValue), 119, 170);
+        mainGaugeSpr.drawString(String(hundredValue), 116, 170);
     if (fuelFlow >= 1000)
-        mainGaugeSpr.drawString(String(thousandValue), 97, 170);
+        mainGaugeSpr.drawString(String(thousandValue), 94, 170);
 
     // Draw the needle
     needleSpr.pushRotated(&mainGaugeSpr, RA_FFNeedleRotationAngle.getAverage(), BACKGROUND_COLOR);
