@@ -16,7 +16,7 @@ private:
     bool    _initialised;
     uint8_t _pin1, _pin2, _pin3;
      // Variables
-    float    ITT                  = 0;  // ITT Value from sim
+    float    ITT                  = 200;  // ITT Value from sim
     float    instrumentBrightness      = 255;  // Instrument Brightness
     float    needleRotationAngle         = 0; // angle of rotation of needle based on the ITT
 
